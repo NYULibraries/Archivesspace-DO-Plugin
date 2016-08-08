@@ -15,7 +15,7 @@ class Composers
   end
 
   def to_json(*args, &block)
-    dataset.collect {|row| format(row)}.to_json
+    only_the_bits_we_need(dataset).collect {|row| format(row)}.to_json
   end
 
   protected
@@ -27,6 +27,12 @@ class Composers
   def format(row)
     raise NotImplementedError.new
   end
+
+
+  def only_the_bits_we_need(ds)
+    ds
+  end
+
 
   def digital_object_instance_type
     db[:enumeration].join(:enumeration_value, :enumeration_id => :enumeration__id)
@@ -86,13 +92,18 @@ class ComposersSummary < Composers
       .left_outer_join(:date, :archival_object_id => :archival_object__id)
       .filter(:instance__instance_type_id => self.digital_object_instance_type)
       .filter(Sequel.like(:note__notes, "%\"type\"\:\"phystech\"%"))
-      .select(:archival_object__id,
-              :archival_object__component_id,
-              :archival_object__title,
-              :note__notes,
-              :extent__container_summary,
-              :date__expression)
-      .distinct(:archival_object__id)
+  end
+
+
+  def only_the_bits_we_need(ds)
+    ds.select(:archival_object__id,
+            :archival_object__component_id,
+            :archival_object__title,
+            :note__notes,
+            :extent__container_summary,
+            :date__expression)
+       .distinct(:archival_object__id)
+
   end
 
 
@@ -112,5 +123,47 @@ class ComposersSummary < Composers
       :extent => row[:container_summary],
       :detailed_view => detailed_url
     }
+  end
+end
+
+
+class ComposersDetailed < ComposersSummary
+
+  def dataset
+    ds = super
+
+    # TODO
+
+    ds
+  end
+
+
+  def only_the_bits_we_need(ds)
+    # TODO
+
+    ds
+  end
+
+
+  def format(row)
+    # -  resource:
+    #    -  identifier
+    #    -  title
+    #    -  bioghist note
+    #    -  scopecontent note
+    #  -  archival object:
+    #    -  component identifier
+    #    -  title
+    #    -  date expression
+    #    -  phystech
+    #    -  extent/phystech
+    #    -  scopecontent note
+    #    -  accessrestrict note
+    #    -  userestrict note
+    #    -  rights statements
+    #    -  names of linked agents
+
+    # TODO
+    row.to_json
   end
 end
