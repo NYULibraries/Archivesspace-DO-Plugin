@@ -2,11 +2,11 @@ class ArchivesSpaceService < Sinatra::Base
 
   Endpoint.get('/plugins/composers/summary')
     .description("Get summarized Digital Object data for a specific Resource")
-    .params(["resource_id", String])
+    .params(["resource_id", String, "A resource identifier like 'FA.AFC.28'"])
     .permissions([])
     .returns([200, "[(:digital_object)]"]) \
   do
-    json_response(Composers.summary(params[:resource_id]))
+    json_response(ComposersLookup.summary(params[:resource_id]))
   end
 
 
@@ -16,7 +16,7 @@ class ArchivesSpaceService < Sinatra::Base
     .permissions([])
     .returns([200, "[(:digital_object)]"]) \
   do
-    json_response(Composers.digital_objects(params[:component_id]))
+    json_response(ComposersLookup.digital_objects(params[:component_id]))
   end
 
 
@@ -26,7 +26,7 @@ class ArchivesSpaceService < Sinatra::Base
          .permissions([])
          .returns([200, "[(:digital_object)]"]) \
   do
-    json_response(Composers.detailed(params[:resource_id]))
+    json_response(ComposersLookup.detailed(params[:resource_id]))
   end
 
 end
